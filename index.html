@@ -525,36 +525,42 @@
   /* ══════════════════════════════════════
      🔧 PUT YOUR APPS SCRIPT URL HERE
   ══════════════════════════════════════ */
-  const API_URL = "https://script.google.com/macros/s/AKfycbw4nYtEn67aIuaLQg1E3XOGfSOL1i3VJuGjJl5AzEKMo5fLNJXcO6z7tpjwjL1jyN10/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbzQQdMW81cSyTSiCeF9_4HCI4qRfl4p__Cv3W7wD1dlU_8nimCh2ASjyS97MNmyCSn_/exec";
   /* ══════════════════════════════════════ */
 
   const MAX_PRODUCTS = 10;
   let currentProduct = null;
 
-  async function loadProduct() {
-    try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const raw = await res.json();
-
-      const products = raw.slice(1, MAX_PRODUCTS + 1).map(row => ({
-        id:    row[0],
-        name:  row[1],
-        price: row[2],
-        image: row[3],
-        desc:  row[4],
-        badge: row[5] || "In Stock",
-        cat:   row[6] || "Premium Item",
-      }));
-
-      document.getElementById("productCountStat").textContent = products.length;
-      renderProducts(products);
-
-    } catch (err) {
-      renderError(err.message);
-    } finally {
-      hideLoader();
-    }
+  function loadProduct() {
+    window._raCallback = function(raw) {
+      try {
+        const products = raw.slice(1, MAX_PRODUCTS + 1).map(row => ({
+          id:    row[0],
+          name:  row[1],
+          price: row[2],
+          image: row[3],
+          desc:  row[4],
+          badge: row[5] || "In Stock",
+          cat:   row[6] || "Premium Item",
+        }));
+        document.getElementById("productCountStat").textContent = products.length;
+        renderProducts(products);
+      } catch(e) {
+        renderError(e.message);
+      } finally {
+        hideLoader();
+      }
+    };
+    const script = document.createElement("script");
+    script.src = API_URL + "?callback=_raCallback";
+    script.onerror = () => { renderError("Could not reach the API"); hideLoader(); };
+    document.head.appendChild(script);
+    setTimeout(() => {
+      if (document.getElementById("loader")) {
+        renderError("Request timed out");
+        hideLoader();
+      }
+    }, 10000);
   }
 
   function renderProducts(products) {
