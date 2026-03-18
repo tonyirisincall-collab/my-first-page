@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KHEMET STORE</title>
+  <title>RA — رع</title>
 
   <!-- JOKER FAVICON -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23150a2e' stroke='%23c9a84c' stroke-width='3'/%3E%3Cellipse cx='50' cy='42' rx='22' ry='28' fill='%23e8d5a3'/%3E%3Ccircle cx='40' cy='38' r='5' fill='%23150a2e'/%3E%3Ccircle cx='60' cy='38' r='5' fill='%23150a2e'/%3E%3Ccircle cx='41' cy='37' r='2' fill='%23c9a84c'/%3E%3Ccircle cx='61' cy='37' r='2' fill='%23c9a84c'/%3E%3Cpath d='M35 55 Q50 70 65 55' stroke='%23c9a84c' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M30 28 Q50 10 70 28' stroke='%23c9a84c' stroke-width='2' fill='none'/%3E%3Cpath d='M28 30 L32 38 M72 30 L68 38' stroke='%23c9a84c' stroke-width='2'/%3E%3C/svg%3E">
@@ -397,7 +397,7 @@
 <div id="loader">
   <div class="loader-glyph">𓂀</div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
-  <div class="loader-label">Awakening the Pharaoh's Vault...</div>
+  <div class="loader-label">RA · رع — Awakening the Sun God's Vault...</div>
 </div>
 
 <!-- APP -->
@@ -407,7 +407,7 @@
     <div class="logo-wrap">
       <div class="logo-icon">𓂀</div>
       <div>
-        <div class="logo-text">KHEMET STORE</div>
+        <div class="logo-text">RA — رع</div>
         <span class="logo-sub">Ancient Luxury · Modern Craft</span>
       </div>
     </div>
@@ -418,7 +418,7 @@
 
   <div class="hero-banner">
     <div>
-      <div class="hero-eyebrow">𓂀 &nbsp; The Pharaoh's Collection</div>
+      <div class="hero-eyebrow">𓂀 &nbsp; RA · رع — The Sun God's Collection</div>
       <h1 class="hero-title">
         Crafted for<br>
         <span class="gold">Eternal</span> <span class="teal">Elegance</span>
@@ -458,13 +458,13 @@
   <div class="contact-section">
     <div>
       <div class="contact-label">𓆙 Get In Touch</div>
-      <div class="contact-title">Reach the Pharaoh's Court</div>
+      <div class="contact-title">Reach the Court of RA · رع</div>
       <div class="contact-items">
-        <a class="contact-chip" href="mailto:tony.iris.incall@gmail.com">
+        <a class="contact-chip" href="/cdn-cgi/l/email-protection#d5a1babbacfbbca7bca6fbbcbbb6b4b9b995b2b8b4bcb9fbb6bab8">
           <span class="contact-chip-icon">✉️</span>
           <div>
             <span class="contact-chip-label">Email</span>
-            <span class="contact-chip-val">tony.iris.incall@gmail.com</span>
+            <span class="contact-chip-val"><span class="__cf_email__" data-cfemail="b8ccd7d6c196d1cad1cb96d1d6dbd9d4d4f8dfd5d9d1d496dbd7d5">[email&#160;protected]</span></span>
           </div>
         </a>
         <a class="contact-chip" href="tel:01094841716">
@@ -483,8 +483,8 @@
   </div>
 
   <footer>
-    <div class="footer-logo">KHEMET STORE</div>
-    <div class="footer-copy">© 2025 · All Rights Reserved</div>
+    <div class="footer-logo">RA — رع</div>
+    <div class="footer-copy">© 2025 RA · رع — All Rights Reserved</div>
     <div class="footer-hiero">𓀀 𓂀 𓆙 𓇋 𓏏</div>
   </footer>
 
@@ -521,11 +521,11 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   /* ══════════════════════════════════════
      🔧 PUT YOUR APPS SCRIPT URL HERE
   ══════════════════════════════════════ */
-  const API_URL = "YOUR_APPS_SCRIPT_API_URL_HERE";
+  const API_URL = "https://script.google.com/macros/s/AKfycby8M71hW_mgydFwzc40-xUUGahzUjKz6t_Mm3Juck_fzC6PjkzwX4D49k7mmn0tMiqQ/exec";
   /* ══════════════════════════════════════ */
 
   const MAX_PRODUCTS = 10;
@@ -613,7 +613,7 @@
         <div class="error-glyph">𓂀</div>
         <div class="error-title">The Vault Could Not Be Opened</div>
         <div class="error-msg">Replace <strong>API_URL</strong> in the code with your Google Apps Script deployment URL.</div>
-        <div class="error-code">const API_URL = "https://script.google.com/macros/s/AKfycby8M71hW_mgydFwzc40-xUUGahzUjKz6t_Mm3Juck_fzC6PjkzwX4D49k7mmn0tMiqQ/exec";</div>
+        <div class="error-code">const API_URL = "YOUR_APPS_SCRIPT_URL_HERE";</div>
         <div class="error-msg" style="font-size:.75rem;margin-top:4px">Error: ${msg}</div>
       </div>
     `;
@@ -666,14 +666,3 @@
       btn.disabled = false; btn.textContent = "⚡ Confirm Order Now";
     }
   }
-
-  function showToast(msg, type = "success") {
-    const t = document.getElementById("toast");
-    t.textContent = msg; t.className = `toast ${type} show`;
-    setTimeout(() => t.classList.remove("show"), 4200);
-  }
-
-  loadProduct();
-</script>
-</body>
-</html>
