@@ -515,38 +515,38 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  /* ══════════════════════════════════════
-     🔧 PUT YOUR APPS SCRIPT URL HERE
-  ══════════════════════════════════════ */
-  const API_URL = "https://script.google.com/macros/s/AKfycbzQQdMW81cSyTSiCeF9_4HCI4qRfl4p__Cv3W7wD1dlU_8nimCh2ASjyS97MNmyCSn_/exec";
-  /* ══════════════════════════════════════ */
+  /* ══════════════════════════════════
+     بيانات المنتجات — عدّل هنا مباشرة
+  ══════════════════════════════════ */
+  const PRODUCTS = [
+    {
+      id: 1,
+      name: "Jocker",
+      price: 500,
+      image: "https://i.ibb.co/5Wxz3Zj9/2ad315a0-f237-479b-9c05-1857c1579f7b.webp",
+      desc: "The best inshallah",
+      badge: "Available",
+      cat: "Photo"
+    },
+    {
+      id: 2,
+      name: "Jocker 2nd",
+      price: 300,
+      image: "https://i.ibb.co/2YvhvfwJ/DALL-E-2025-03-27-02-16-40-A-dark-high-quality-digital-painting-of-a-fusion-between-the-Joker-and.webp",
+      desc: "2nd one",
+      badge: "Available",
+      cat: "Photo 2"
+    },
+    /* أضف منتجات هنا بنفس الشكل — لغاية 10 منتجات */
+  ];
+  /* ══════════════════════════════════ */
 
-  const MAX_PRODUCTS = 10;
   let currentProduct = null;
 
-  async function loadProduct() {
-    try {
-      const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(API_URL);
-      const res = await fetch(proxy);
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      const raw = JSON.parse(data.contents);
-      const products = raw.slice(1, MAX_PRODUCTS + 1).map(row => ({
-        id:    row[0],
-        name:  row[1],
-        price: row[2],
-        image: row[3],
-        desc:  row[4],
-        badge: row[5] || "In Stock",
-        cat:   row[6] || "Premium Item",
-      }));
-      document.getElementById("productCountStat").textContent = products.length;
-      renderProducts(products);
-    } catch(err) {
-      renderError(err.message);
-    } finally {
-      hideLoader();
-    }
+  function loadProduct() {
+    document.getElementById("productCountStat").textContent = PRODUCTS.length;
+    renderProducts(PRODUCTS);
+    hideLoader();
   }
 
   function renderProducts(products) {
