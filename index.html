@@ -524,36 +524,29 @@
   const MAX_PRODUCTS = 10;
   let currentProduct = null;
 
-  function loadProduct() {
-    window._raCallback = function(raw) {
-      try {
-        const products = raw.slice(1, MAX_PRODUCTS + 1).map(row => ({
-          id:    row[0],
-          name:  row[1],
-          price: row[2],
-          image: row[3],
-          desc:  row[4],
-          badge: row[5] || "In Stock",
-          cat:   row[6] || "Premium Item",
-        }));
-        document.getElementById("productCountStat").textContent = products.length;
-        renderProducts(products);
-      } catch(e) {
-        renderError(e.message);
-      } finally {
-        hideLoader();
-      }
-    };
-    const script = document.createElement("script");
-    script.src = API_URL + "?callback=_raCallback";
-    script.onerror = () => { renderError("Could not reach the API"); hideLoader(); };
-    document.head.appendChild(script);
-    setTimeout(() => {
-      if (document.getElementById("loader")) {
-        renderError("Request timed out");
-        hideLoader();
-      }
-    }, 10000);
+  async function loadProduct() {
+    try {
+      const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(API_URL);
+      const res = await fetch(proxy);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      const raw = JSON.parse(data.contents);
+      const products = raw.slice(1, MAX_PRODUCTS + 1).map(row => ({
+        id:    row[0],
+        name:  row[1],
+        price: row[2],
+        image: row[3],
+        desc:  row[4],
+        badge: row[5] || "In Stock",
+        cat:   row[6] || "Premium Item",
+      }));
+      document.getElementById("productCountStat").textContent = products.length;
+      renderProducts(products);
+    } catch(err) {
+      renderError(err.message);
+    } finally {
+      hideLoader();
+    }
   }
 
   function renderProducts(products) {
@@ -665,5 +658,3 @@
       btn.disabled = false; btn.textContent = "⚡ Confirm Order Now";
     }
   }
-
-  
