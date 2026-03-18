@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RA · رع — Ancient Luxury</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0800'/%3E%3Cellipse cx='32' cy='32' rx='18' ry='11' fill='none' stroke='%23c9952a' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23c9952a'/%3E%3Ccircle cx='32' cy='32' r='2.5' fill='%230a0800'/%3E%3Cpath d='M32 21 Q38 14 44 18' fill='none' stroke='%23c9952a' stroke-width='1.8' stroke-linecap='round'/%3E%3Cline x1='14' y1='32' x2='20' y2='32' stroke='%23c9952a' stroke-width='1.5'/%3E%3Cline x1='44' y1='32' x2='50' y2='32' stroke='%23c9952a' stroke-width='1.5'/%3E%3Cpath d='M26 38 Q32 44 38 38' fill='none' stroke='%23e8b84b' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='8' r='4' fill='%23c9952a'/%3E%3Cline x1='32' y1='12' x2='32' y2='21' stroke='%23c9952a' stroke-width='1.5'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -626,6 +627,51 @@
     .error-glyph { font-size: 3rem; opacity: .5; }
     .error-title { font-family: 'Cinzel', serif; font-size: 1.3rem; }
     .error-msg { color: var(--muted); font-size: .88rem; max-width: 380px; line-height: 1.7; }
+
+    /* ═══════════════════════════════════════
+       MUSIC BUTTON
+    ═══════════════════════════════════════ */
+    #musicBtn {
+      position: fixed;
+      bottom: 32px; right: 32px; z-index: 90;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--card);
+      border: 1px solid rgba(201,149,42,.4);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,.5);
+      transition: border-color .3s, transform .2s, box-shadow .3s;
+      overflow: visible;
+    }
+    #musicBtn:hover { border-color: var(--gold); transform: scale(1.08); }
+    #musicBtn.playing { animation: musicPulse 2s ease-in-out infinite; }
+    @keyframes musicPulse {
+      0%,100% { box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 6px rgba(201,149,42,.08); }
+      50%      { box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 14px rgba(201,149,42,.03); }
+    }
+    .music-icon { font-size: 1.3rem; line-height: 1; filter: drop-shadow(0 0 6px rgba(201,149,42,.5)); }
+    #musicBtn.playing .music-icon { animation: spin 4s linear infinite; }
+    .music-bars {
+      position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: flex-end; gap: 2px;
+      opacity: 0; transition: opacity .3s;
+    }
+    #musicBtn.playing .music-bars { opacity: 1; }
+    .music-bar { width: 3px; border-radius: 2px; background: linear-gradient(to top, var(--gold), var(--gold3)); }
+    .music-bar:nth-child(1) { height: 8px;  animation: bar 1.0s ease-in-out infinite; }
+    .music-bar:nth-child(2) { height: 12px; animation: bar 0.8s ease-in-out infinite .15s; }
+    .music-bar:nth-child(3) { height: 6px;  animation: bar 1.2s ease-in-out infinite .3s; }
+    @keyframes bar { 0%,100%{transform:scaleY(.4)} 50%{transform:scaleY(1)} }
+    #musicBtn::after {
+      content: attr(data-tip);
+      position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-family: 'Cinzel', serif;
+      font-size: .65rem; letter-spacing: .1em; color: var(--muted);
+      white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+    #musicBtn:hover::after { opacity: 1; }
+    @media(max-width:640px){ #musicBtn { bottom: 20px; right: 20px; width: 46px; height: 46px; } }
   </style>
 </head>
 <body>
@@ -770,6 +816,20 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- MUSIC -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_946ef970e3.mp3" type="audio/mpeg">
+</audio>
+
+<button id="musicBtn" data-tip="Toggle Music" onclick="toggleMusic()" title="Toggle Music">
+  <span class="music-icon">𓂀</span>
+  <div class="music-bars">
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+  </div>
+</button>
 
 <script>
 /* ═══════════════════════════════════════════════════
