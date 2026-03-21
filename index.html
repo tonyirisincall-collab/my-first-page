@@ -374,7 +374,7 @@
         <input type="tel" class="form-input" id="inputPhone" placeholder="01xxxxxxxxx"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Address (optional)</label>
+        <label class="form-label">Address *</label>
         <input type="text" class="form-input" id="inputAddress" placeholder="City / District"/>
       </div>
       <div class="qty-row">
@@ -475,7 +475,7 @@
 <div id="musicLabel">Music</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxjfiAO-Dcs6PIkHdwtViHafVRuZqkwmJ3UcVy8u85ld0RxDMWmBy2NQVeT23F3p_oG/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwW0_xMn3P7bJjBZsdfsLyyP8LAPLlr5JHgXG5LYMV2LX_oG9FSaGqrA11cK6xKCB1y/exec";
 const SIZES = ['XS','S','M','L','XL','XXL'];
 const HIEROGLYPHS = ['𓀀','𓁐','𓂀','𓃭','𓄿','𓅓','𓆙','𓇋','𓈖','𓊪'];
 
@@ -608,6 +608,7 @@ async function submitOrder() {
   if (!name) return showToast('✕ Please enter your name','error');
   if (!phone) return showToast('✕ Please enter your phone','error');
   if (!/^01[0-2,5][0-9]{8}$/.test(phone)) return showToast('✕ Invalid phone number','error');
+  if (!address) return showToast('✕ Please enter your address','error');
   const btn=document.getElementById('submitBtn');
   btn.disabled=true; btn.textContent='⏳ Sending…';
   try {
@@ -672,6 +673,7 @@ async function submitCartOrder() {
   if(!name) return showToast('✕ Please enter your name','error');
   if(!phone) return showToast('✕ Please enter your phone','error');
   if(!/^01[0-2,5][0-9]{8}$/.test(phone)) return showToast('✕ Invalid phone number','error');
+  if(!address) return showToast('✕ Please enter your address','error');
   const btn=document.getElementById('coSubmitBtn');
   btn.disabled=true; btn.textContent='⏳ Sending…';
   const items=cart.map(i=>`${i.product.name} (${i.size}) x${i.qty}`).join(', ');
