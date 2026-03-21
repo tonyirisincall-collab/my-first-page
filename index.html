@@ -509,7 +509,7 @@ function renderProducts() {
     return;
   }
   grid.innerHTML = products.map((p,i)=>{
-    const unavailable = p.badge.trim().toLowerCase() === 'not available';
+    const unavailable = (()=>{ const b=p.badge.trim().toLowerCase(); return b.includes('not') || b.includes('unavail'); })();
     return `
     <div class="product-card${unavailable?' unavailable':''}" style="animation-delay:${i*.07}s">
       <div class="card-img-wrap" onclick="openLightbox('${p.image.replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}')">
@@ -572,7 +572,7 @@ function selectSize(el, size) {
 function openModal(i) {
   const p = products[i];
   // If unavailable — open notify modal instead
-  if (p.badge.trim().toLowerCase() === 'not available') {
+  if ((()=>{ const b=p.badge.trim().toLowerCase(); return b.includes('not') || b.includes('unavail'); })()) {
     openNotify(i);
     return;
   }
@@ -600,7 +600,7 @@ function updateModalTotal(){
 
 /* SUBMIT SINGLE */
 async function submitOrder() {
-  if (currentProduct.badge.trim().toLowerCase() === 'not available') return showToast('✕ This product is not available','error');
+  if ((()=>{ const b=currentProduct.badge.trim().toLowerCase(); return b.includes('not') || b.includes('unavail'); })()) return showToast('✕ This product is not available','error');
   if (!selectedSize) return showToast('✕ Please select a size','error');
   const name=document.getElementById('inputName').value.trim();
   const phone=document.getElementById('inputPhone').value.trim();
@@ -612,7 +612,7 @@ async function submitOrder() {
   btn.disabled=true; btn.textContent='⏳ Sending…';
   try {
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,phone,address,product:currentProduct?.name||'',size:selectedSize,price:currentProduct?.price||'',qty:qty,total:qty*(currentProduct?.price||0)})});
+      body:JSON.stringify({name,phone,address,product:currentProduct?.name||'',size:selectedSize,price:currentProduct?.price||'',qty:Number(qty),total:Number(qty)*(currentProduct?.price||0)})});
     closeModal();
     showToast("✦ Order placed! We'll contact you soon.",'success');
   } catch { showToast('✕ An error occurred.','error'); }
@@ -621,7 +621,7 @@ async function submitOrder() {
 
 /* CART */
 function addToCartFromModal() {
-  if (currentProduct.badge.trim().toLowerCase() === 'not available') return showToast('✕ This product is not available','error');
+  if ((()=>{ const b=currentProduct.badge.trim().toLowerCase(); return b.includes('not') || b.includes('unavail'); })()) return showToast('✕ This product is not available','error');
   if (!selectedSize) return showToast('✕ Please select a size first','error');
   const ex=cart.find(i=>i.product.id===currentProduct.id&&i.size===selectedSize);
   if (ex) ex.qty+=qty; else cart.push({product:{...currentProduct},size:selectedSize,qty});
