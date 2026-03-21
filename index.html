@@ -212,6 +212,8 @@
     .card-unavail-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,7,10,.55);font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;pointer-events:none}
     .badge-unavail{background:var(--faint)!important;color:var(--muted)!important}
     .card-order-disabled{opacity:.45!important;cursor:not-allowed!important;background:var(--faint)!important;color:var(--muted)!important;transform:none!important;box-shadow:none!important}
+    .card-notify-btn{font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;letter-spacing:.08em;background:transparent;border:1px solid rgba(201,149,42,.35);color:var(--gold);border-radius:8px;padding:9px 16px;cursor:pointer;transition:background .2s,border-color .2s}
+    .card-notify-btn:hover{background:rgba(201,149,42,.08);border-color:var(--gold)}
 
     /* MUSIC */
     #musicBtn{position:fixed;bottom:32px;right:32px;z-index:90;width:52px;height:52px;border-radius:50%;background:var(--card);border:1px solid rgba(201,149,42,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.5);transition:border-color .3s,transform .2s,box-shadow .3s;overflow:visible}
@@ -428,6 +430,37 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- NOTIFY MODAL -->
+<div class="modal-overlay" id="notifyOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-subtitle">𓇋 Be the First to Know</div>
+        <div class="modal-prod-name" id="notifyProdName">—</div>
+      </div>
+      <button class="close-btn" onclick="closeNotify()" style="margin-top:4px">✕</button>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.8">
+        𓂀 <em>The vault is sealed for now.</em><br>
+        Leave your name and number — when this item returns to the court of RA, you will be the first the sun god calls upon.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" id="notifyName" placeholder="Your full name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number *</label>
+        <input type="tel" class="form-input" id="notifyPhone" placeholder="01xxxxxxxxx"/>
+      </div>
+      <button class="submit-btn" id="notifySubmitBtn" onclick="submitNotify()">
+        𓆙 Reserve My Place
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MUSIC -->
 <audio id="bgMusic" loop preload="auto"></audio>
 <button id="musicBtn" data-tip="Play Music" onclick="toggleMusic()" title="Toggle Music">
@@ -494,7 +527,7 @@ function renderProducts() {
             ${p.old_price?`<div class="card-price-old">${Number(p.old_price).toLocaleString()} EGP</div>`:''}
           </div>
           ${unavailable
-            ? '<button class="card-order-btn card-order-disabled" disabled>Not Available</button>'
+            ? `<button class="card-notify-btn" onclick="event.stopPropagation();openNotify(${i})">Notify Me</button>`
             : `<button class="card-order-btn" onclick="event.stopPropagation();openModal(${i})">Order Now</button>`
           }
         </div>
@@ -668,7 +701,59 @@ function toggleMusic(){
 }
 
 /* ESC key */
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox();closeModal();closeCart();closeCheckout();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox();closeModal();closeCart();closeCheckout();closeNotify();}});
+
+/* NOTIFY */
+let notifyProduct = null;
+
+function openNotify(i) {
+  notifyProduct = products[i];
+  document.getElementById('notifyProdName').textContent = notifyProduct.name;
+  document.getElementById('notifyName').value  = '';
+  document.getElementById('notifyPhone').value = '';
+  document.getElementById('notifyOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeNotify() {
+  document.getElementById('notifyOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('notifyOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeNotify();
+});
+
+async function submitNotify() {
+  const name  = document.getElementById('notifyName').value.trim();
+  const phone = document.getElementById('notifyPhone').value.trim();
+  if (!name)  return showToast('✕ Please enter your name', 'error');
+  if (!phone) return showToast('✕ Please enter your phone', 'error');
+  if (!/^01[0-2,5][0-9]{8}$/.test(phone)) return showToast('✕ Invalid phone number', 'error');
+
+  const btn = document.getElementById('notifySubmitBtn');
+  btn.disabled = true; btn.textContent = '⏳ Sending…';
+
+  try {
+    await fetch(API_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type:    'notify',
+        name,
+        phone,
+        product: notifyProduct?.name || '',
+      })
+    });
+    closeNotify();
+    showToast('𓂀 The sun god has noted your name. We will call upon you soon.', 'success');
+  } catch {
+    showToast('✕ An error occurred. Please try again.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '𓆙 Reserve My Place';
+  }
+}
 
 /* BOOT */
 loadProducts();
