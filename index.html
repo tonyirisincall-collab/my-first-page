@@ -442,10 +442,13 @@
     </div>
     <div class="modal-divider"></div>
     <div class="modal-body">
-      <p style="font-size:.88rem;color:var(--muted);line-height:1.8">
-        𓂀 <em>The vault is sealed for now.</em><br>
-        Leave your name and number — when this item returns to the court of RA, you will be the first the sun god calls upon.
-      </p>
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:4px">
+        <div style="font-size:.65rem;letter-spacing:.2em;color:var(--gold);font-family:'Cinzel',serif;text-transform:uppercase;margin-bottom:6px">𓂀 Currently Unavailable</div>
+        <div style="font-size:.88rem;color:var(--muted);line-height:1.8">
+          This item has left the vault for now — but the sun god's court never sleeps.<br><br>
+          <strong style="color:var(--text)">Leave your name and number</strong> and the moment it returns, you will be the very first we call upon. ✦
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">Full Name *</label>
         <input type="text" class="form-input" id="notifyName" placeholder="Your full name"/>
@@ -567,7 +570,13 @@ function selectSize(el, size) {
 
 /* MODAL */
 function openModal(i) {
-  currentProduct=products[i]; selectedSize=''; qty=1;
+  const p = products[i];
+  // If unavailable — open notify modal instead
+  if (p.badge.trim().toLowerCase() === 'not available') {
+    openNotify(i);
+    return;
+  }
+  currentProduct=p; selectedSize=''; qty=1;
   document.getElementById('qtyDisplay').textContent=1;
   document.getElementById('modalProdName').textContent=currentProduct.name;
   document.getElementById('modalSizeGuide').classList.remove('open');
@@ -603,7 +612,7 @@ async function submitOrder() {
   btn.disabled=true; btn.textContent='⏳ Sending…';
   try {
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,phone,address,product:currentProduct?.name||'',size:selectedSize,price:currentProduct?.price||'',qty,total:qty*(currentProduct?.price||0)})});
+      body:JSON.stringify({name,phone,address,product:currentProduct?.name||'',size:selectedSize,price:currentProduct?.price||'',qty:qty,total:qty*(currentProduct?.price||0)})});
     closeModal();
     showToast("✦ Order placed! We'll contact you soon.",'success');
   } catch { showToast('✕ An error occurred.','error'); }
@@ -666,9 +675,10 @@ async function submitCartOrder() {
   const btn=document.getElementById('coSubmitBtn');
   btn.disabled=true; btn.textContent='⏳ Sending…';
   const items=cart.map(i=>`${i.product.name} (${i.size}) x${i.qty}`).join(', ');
+  const totalQty=cart.reduce((s,i)=>s+i.qty,0);
   try {
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({name,phone,address,product:items,qty:cart.reduce((s,i)=>s+i.qty,0),total:cartTotal()})});
+      body:JSON.stringify({name,phone,address,product:items,qty:totalQty,total:cartTotal()})});
     cart=[]; updateCartUI(); closeCheckout();
     showToast("✦ Cart order placed! We'll contact you soon.",'success');
     ['coName','coPhone','coAddress'].forEach(id=>document.getElementById(id).value='');
