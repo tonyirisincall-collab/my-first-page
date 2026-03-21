@@ -82,7 +82,6 @@
     .product-card:hover .card-zoom-icon{opacity:1;transform:scale(1)}
     .card-badge{position:absolute;top:14px;left:14px;font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0800;padding:5px 12px;border-radius:99px}
     .card-hiero{position:absolute;top:12px;right:14px;font-size:.9rem;color:rgba(201,149,42,.4);letter-spacing:3px}
-    .card-stars{position:absolute;bottom:14px;right:14px;background:rgba(8,7,10,.85);border:1px solid var(--faint);border-radius:8px;padding:4px 10px;font-size:.7rem;color:var(--gold2);backdrop-filter:blur(4px)}
     .card-body{padding:20px}
     .card-category{font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
     .card-name{font-family:'Cinzel',serif;font-size:1rem;font-weight:700;line-height:1.3;color:var(--text);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -206,6 +205,13 @@
     .error-glyph{font-size:3rem;opacity:.5}
     .error-title{font-family:'Cinzel',serif;font-size:1.3rem}
     .error-msg{color:var(--muted);font-size:.88rem;max-width:380px;line-height:1.7}
+
+    /* UNAVAILABLE */
+    .product-card.unavailable{opacity:.6}
+    .product-card.unavailable .card-img-wrap img{filter:grayscale(60%)}
+    .card-unavail-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,7,10,.55);font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;pointer-events:none}
+    .badge-unavail{background:var(--faint)!important;color:var(--muted)!important}
+    .card-order-disabled{opacity:.45!important;cursor:not-allowed!important;background:var(--faint)!important;color:var(--muted)!important;transform:none!important;box-shadow:none!important}
 
     /* MUSIC */
     #musicBtn{position:fixed;bottom:32px;right:32px;z-index:90;width:52px;height:52px;border-radius:50%;background:var(--card);border:1px solid rgba(201,149,42,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.5);transition:border-color .3s,transform .2s,box-shadow .3s;overflow:visible}
@@ -466,15 +472,17 @@ function renderProducts() {
     grid.innerHTML=`<div class="error-state" style="grid-column:1/-1"><div class="error-glyph">𓆙</div><div class="error-title">No products found</div><div class="error-msg">Add rows to your Google Sheet.</div></div>`;
     return;
   }
-  grid.innerHTML = products.map((p,i)=>`
-    <div class="product-card" style="animation-delay:${i*.07}s">
+  grid.innerHTML = products.map((p,i)=>{
+    const unavailable = p.badge.trim().toLowerCase() === 'not available';
+    return `
+    <div class="product-card${unavailable?' unavailable':''}" style="animation-delay:${i*.07}s">
       <div class="card-img-wrap" onclick="openLightbox('${p.image.replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}')">
         <img src="${p.image}" alt="${p.name}" onerror="this.src='https://placehold.co/600x600/16141c/c9952a?text=RA'">
         <div class="card-img-overlay"></div>
         <div class="card-zoom"><span class="card-zoom-icon">🔍</span></div>
-        <div class="card-badge">${p.badge}</div>
+        <div class="card-badge${unavailable?' badge-unavail':''}">${p.badge}</div>
         <div class="card-hiero">${p.hiero}</div>
-        <div class="card-stars">★★★★★ 4.9</div>
+        ${unavailable?'<div class="card-unavail-overlay">Out of Stock</div>':''}
       </div>
       <div class="card-body">
         <div class="card-category">${p.category}</div>
@@ -485,10 +493,14 @@ function renderProducts() {
             <div class="card-price">${Number(p.price).toLocaleString()} EGP</div>
             ${p.old_price?`<div class="card-price-old">${Number(p.old_price).toLocaleString()} EGP</div>`:''}
           </div>
-          <button class="card-order-btn" onclick="event.stopPropagation();openModal(${i})">Order Now</button>
+          ${unavailable
+            ? '<button class="card-order-btn card-order-disabled" disabled>Not Available</button>'
+            : `<button class="card-order-btn" onclick="event.stopPropagation();openModal(${i})">Order Now</button>`
+          }
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderError(msg) {
@@ -546,6 +558,7 @@ function updateModalTotal(){
 
 /* SUBMIT SINGLE */
 async function submitOrder() {
+  if (currentProduct.badge.trim().toLowerCase() === 'not available') return showToast('✕ This product is not available','error');
   if (!selectedSize) return showToast('✕ Please select a size','error');
   const name=document.getElementById('inputName').value.trim();
   const phone=document.getElementById('inputPhone').value.trim();
@@ -566,6 +579,7 @@ async function submitOrder() {
 
 /* CART */
 function addToCartFromModal() {
+  if (currentProduct.badge.trim().toLowerCase() === 'not available') return showToast('✕ This product is not available','error');
   if (!selectedSize) return showToast('✕ Please select a size first','error');
   const ex=cart.find(i=>i.product.id===currentProduct.id&&i.size===selectedSize);
   if (ex) ex.qty+=qty; else cart.push({product:{...currentProduct},size:selectedSize,qty});
